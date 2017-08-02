@@ -118,7 +118,15 @@ public:
 		return _inst;
 	}
 
-	void DelInstance()
+	struct GC
+	{
+		~GC()
+		{
+			DelInstance();
+		}
+	};
+
+	static void DelInstance()
 	{
 		lock_guard<mutex> lock(_lock);
 		if (_inst)
@@ -126,6 +134,11 @@ public:
 			delete _inst;
 			_inst = NULL;
 		}
+	}
+
+	void Print()
+	{
+		cout << "Singleton_Lazy" << endl;
 	}
 
 private:
@@ -147,9 +160,65 @@ private:
 };
 
 Singleton_Lazy* Singleton_Lazy::_inst = NULL;
+mutex Singleton_Lazy::_lock;
 
+void TestLazy()
+{
+	Singleton_Lazy::GetInstance()->Print();
+	Singleton_Lazy::GetInstance()->Print();
+	Singleton_Lazy::GetInstance()->Print();
+	Singleton_Lazy::GetInstance()->Print();	
 
+	atexit(Singleton_Lazy::DelInstance);
+	//当应用是打开一个数据库的时候
+	//我们还是要在结束后对数据库进行关闭
+	//一种是调用一个函数atexit
+	//在main函数执行完后直接调用	
+}
 
+//另一种，是我们单独封装一个结构体用来实现关闭的功能
+static Singleton_Lazy::GC gc;
+
+//第二种：饿汉模式
+//无论你是否需要，我先创建一个
+class Singleton_HUNGRY
+{
+public:
+	static Singleton_HUNGRY& GetInstance()
+	{
+		static Singleton_HUNGRY inst;
+		return inst;
+	}
+	void Print()
+	{
+		cout << "Singleton_HUNGRY" << endl;
+	}
+
+private:
+	Singleton_HUNGRY()
+		:_a(0)
+	{}
+	Singleton_HUNGRY(const Singleton_HUNGRY&);
+	Singleton_HUNGRY& operator=(const Singleton_HUNGRY&);
+
+	int _a;
+};
+
+void TestHungry()
+{
+	Singleton_HUNGRY::GetInstance().Print();
+	Singleton_HUNGRY::GetInstance().Print();
+	Singleton_HUNGRY::GetInstance().Print();
+}
+
+int main()
+{
+	//TestSingleton();
+	//TestLazy();
+	TestHungry();
+	system("pause");
+	return 0;
+}
 //懒汉和饿汉的区别：
 //懒汉相对复杂，但是各种情景下都适用
 //饿汉虽然简洁，但是适应性会收到限制，比如动态库
