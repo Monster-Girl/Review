@@ -89,7 +89,7 @@ void AdjustDown(int* a, size_t n, size_t parent)
 	size_t child = parent * 2 + 1;
 	while (child < n)
 	{
-		if (a[child + 1]>a[child])
+		if (child+1<n && a[child + 1]>a[child])   //child+1 ·ÀÖ¹Ô½½ç
 			child++;
 		if (a[child] > a[parent])
 		{
@@ -105,7 +105,7 @@ void AdjustDown(int* a, size_t n, size_t parent)
 void HeapSort(int* a, size_t n)
 {
 	assert(a);
-	for (size_t i = 0; i < n; i++)
+	for (int i = (n - 2) / 2; i>= 0; i--)
 		AdjustDown(a, n, i);
 
 	int end = n - 1;
@@ -123,7 +123,6 @@ int main()
 	int a[] = { 10,11,13,12,16,18,15,17,14,19 };
 	Heap<int> h(a, 10);
 	HeapSort(a, 10);
-
 	system("pause");
 	return 0;
 }
