@@ -118,11 +118,36 @@ void HeapSort(int* a, size_t n)
 }
 
 
+void topK(int *a, int n, int k)
+{
+	assert(n > k);
+	int *heap = new int[k];
+	for (int i = 0; i < k; i++)
+		heap[i] = a[i];
+
+	for (int i = (k - 2) / 2; i >= 0; i--)
+		AdjustDown(heap, k, i);
+
+	for (int i = k; i < n; i++)
+	{
+		if (a[i]>heap[0])
+		{
+			heap[0] = a[i];
+			AdjustDown(heap, k, 0);
+		}
+	}
+
+	delete[] heap;
+
+}
+
+
 int main()
 {
 	int a[] = { 10,11,13,12,16,18,15,17,14,19 };
-	Heap<int> h(a, 10);
-	HeapSort(a, 10);
+	//Heap<int> h(a, 10);
+	//HeapSort(a, 10);
+	topK(a, 10, 3);
 	system("pause");
 	return 0;
 }
