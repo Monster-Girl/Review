@@ -118,6 +118,25 @@ void HeapSort(int* a, size_t n)
 }
 
 
+
+void AdjustDownS(int* a, size_t n, size_t parent)
+{
+	size_t child = parent * 2 + 1;
+	while (child < n)
+	{
+		if (child + 1<n && a[child + 1] < a[child])   //child+1 防止越界
+			child++;
+		if (a[child] < a[parent])
+		{
+			swap(a[child], a[parent]);
+			parent = child;
+			child = parent * 2 + 1;
+		}
+		else
+			break;
+	}
+}
+
 void topK(int *a, int n, int k)
 {
 	assert(n > k);
@@ -126,14 +145,14 @@ void topK(int *a, int n, int k)
 		heap[i] = a[i];
 
 	for (int i = (k - 2) / 2; i >= 0; i--)
-		AdjustDown(heap, k, i);
+		AdjustDownS(heap, k, i);   //要想找到最大的，需要建一个小堆
 
 	for (int i = k; i < n; i++)
 	{
-		if (a[i]>heap[0])
+		if (a[i]>heap[0])     //每次和堆头的进行比较，如果堆头的小，就交换
 		{
 			heap[0] = a[i];
-			AdjustDown(heap, k, 0);
+			AdjustDownS(heap, k, 0);   //调整堆，保证最小的在堆头位置
 		}
 	}
 
